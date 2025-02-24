@@ -1,0 +1,20 @@
+{
+    "morgan": {
+        "type": "common",
+        "stream": "console"
+    },
+    "accounting": {
+        "roles": ["USER", "ADMIN"],
+        "user_role": "USER",
+        "admin_role": "ADMIN",
+        "salt_rounds":  10,
+        "expired_in": "1h" 
+    },
+    "db": {
+        "db_name": "sample_mflix",
+        "movies_collection": "movies",
+        "comments_collection": "comments",
+        "favorites_collection": "favorites",
+        "users_collection": "users"
+    }
+}
