@@ -33,11 +33,12 @@ class AccountsService {
             throw createError(409, `cann't create user with e-mail ${account.email}`);
         }
         const serviceAccount = this.#toServiceAccount(account, role);
-        const res = await this.#accounts.insertOne(serviceAccount);
-        if (!res) {
+        try {
+            await this.#accounts.insertOne(serviceAccount);
+            return serviceAccount;
+        } catch (error) {
             throw createError(409, `user with e-mail ${account.email} already exists`);
         }
-        return serviceAccount;
     }
 
     async getAccount(email) {

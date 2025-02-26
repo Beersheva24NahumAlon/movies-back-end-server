@@ -48,17 +48,14 @@ class CommentsService {
         }
     }
 
-    async updateComment(comment) {
-        const {_id, email, text } = comment;
-        const resUser = await accountsService.getAccount(email);
-        const objectId = ObjectId.createFromHexString(_id);
+    async updateComment(id, text) {
         const resComment = await this.#comments.findOneAndUpdate(
-            { _id: objectId },
+            { _id: ObjectId.createFromHexString(id) },
             { $set: { text } },
             { returnDocument: "after" }
         );
         if (!resComment) {
-            throw createError(404, `comment with id ${_id} doesn't exist`);
+            throw createError(404, `comment with id ${id} doesn't exist`);
         }
         return resComment;
     }

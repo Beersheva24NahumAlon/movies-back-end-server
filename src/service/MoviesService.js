@@ -73,15 +73,13 @@ class MoviesService {
         if (actor) {
             query[0].$match.cast = new RegExp(actor, "i");
         }
-        if (genres instanceof Array && genres.length > 0) {
+        if (genres) {
             query[0].$match.genres = { $all: genres };
         }
-        if (languages instanceof Array && languages.length > 0) {
+        if (languages) {
             query[0].$match.languages = { $all: languages };
         }
-        if (amount) {
-            query[2].$limit = amount;
-        }
+        query[2].$limit = amount;
     }
 
     #checkFiltringResult(array) {
