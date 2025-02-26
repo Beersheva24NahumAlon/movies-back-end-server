@@ -42,6 +42,7 @@ class MoviesService {
     async addRate(rateObj) {
         let count = 0;
         const { imdbId, rating } = rateObj;
+        
         const movies = await this.#movies.find({ "imdb.id": imdbId }).toArray();
         for (let movie of movies) {
             const newVotes = movie.imdb.votes + 1;
@@ -56,7 +57,6 @@ class MoviesService {
         }
         return count;
     }
-
 
     async #getFilter(query, filter) {
         this.#addFilter(query, filter);

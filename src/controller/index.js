@@ -4,12 +4,16 @@ import { errorHandler } from "../errors/errors.js";
 import commentsRouter from "../routes/comments.js";
 import accountsRouter from "../routes/accounts.js";
 import favoritesRouter from "../routes/favorites.js";
+import { logger } from "../loggers/logger.js";
+import { authenticate } from "../middleware/auth.js";
 
 const port = process.env.PORT ?? 3600;
 
 const app = express();
 
 app.use(express.json());
+app.use(logger);
+app.use(authenticate());
 app.use("/api/v1/movies", moviesRouter);
 app.use("/api/v1/comments", commentsRouter);
 app.use("/api/v1/accounts", accountsRouter);

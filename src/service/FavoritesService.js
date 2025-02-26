@@ -51,6 +51,12 @@ class FavoritesService {
         return resFavorite;
     }
 
+    async getFavorite(id) {
+        const resFavorite = await this.#favorites.findOne( {_id: ObjectId.createFromHexString(id)} );
+        this.#throwNotFound(resFavorite, id);
+        return resFavorite;
+    }
+
     #throwNotFound(resFavorite, id) {
         if (!resFavorite) {
             throw createError(404, `favorite with id ${id} doesn't exists`);

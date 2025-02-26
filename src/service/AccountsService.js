@@ -115,6 +115,9 @@ class AccountsService {
         if (new Date().getTime() > serviceAccount.expiration) {
             throw createError(400, "password expired");
         }
+        if (serviceAccount.blocked) {
+            throw createError(400, "account has blocked");
+        }
     }
 
     #toServiceAccount(account, role) {

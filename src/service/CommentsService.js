@@ -54,9 +54,7 @@ class CommentsService {
             { $set: { text } },
             { returnDocument: "after" }
         );
-        if (!resComment) {
-            throw createError(404, `comment with id ${id} doesn't exist`);
-        }
+        this.#throwNotFound(resComment, id);
         return resComment;
     }
 
@@ -71,9 +69,7 @@ class CommentsService {
     async deleteComment(id) {
         const objectId = ObjectId.createFromHexString(id);
         const resComment = await this.#comments.findOneAndDelete( {_id: objectId} );
-        if (!resComment) {
-            throw createError(404, `comment with id ${id} doesn't exist`);
-        }
+        this.#throwNotFound(resComment, id);
         const resMovie = await this.#movies.findOneAndUpdate(
             { _id: resComment.movie_id },
             { $inc: { num_mflix_comments: -1 } }
@@ -82,6 +78,18 @@ class CommentsService {
             throw createError(404, `movie with id ${move_id} doesn't exist`);
         }
         return resComment;
+    }
+
+    async getComment(id) {
+        const resComment = await this.#comments.findOne( {_id: ObjectId.createFromHexString(id)} );
+        this.#throwNotFound(resComment, id);
+        return resComment;
+    }
+
+    #throwNotFound(resComment, id) {
+        if (!resComment) {
+            throw createError(404, `comment with id ${id} doesn't exist`);
+        }
     }
 }
 
