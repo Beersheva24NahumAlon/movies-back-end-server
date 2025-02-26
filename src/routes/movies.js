@@ -4,17 +4,17 @@ import expressAsyncHandler from "express-async-handler";
 
 const moviesRouter = express.Router();
 
-moviesRouter.get("/:id", expressAsyncHandler(async (req, res) => {
+moviesRouter.get("/movie/:id", expressAsyncHandler(async (req, res) => {
     res.send(await moviesService.getMovie(req.params.id))
 }));
-moviesRouter.post("/mostrated/", expressAsyncHandler(async (req, res) => {
+moviesRouter.get("/mostrated/", expressAsyncHandler(async (req, res) => {
     res.send(await moviesService.getMostRated(req.body));
 }));
-moviesRouter.post("/mostcommented/", expressAsyncHandler(async (req, res) => {
+moviesRouter.get("/mostcommented/", expressAsyncHandler(async (req, res) => {
     res.send(await moviesService.getMostCommented(req.body));
 }));
-moviesRouter.put("/rate/", expressAsyncHandler(async (req, res) => {
-    res.send(await moviesService.addRate(req.body));
+moviesRouter.post("/rate/", expressAsyncHandler(async (req, res) => {
+    res.send({number: await moviesService.addRate(req.body)});
 }));
 
 export default moviesRouter;

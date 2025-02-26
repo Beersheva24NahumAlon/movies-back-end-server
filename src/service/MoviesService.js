@@ -4,7 +4,7 @@ import config from "config";
 import { ObjectId } from "mongodb";
 
 class MoviesService {
-    #movies 
+    #movies
 
     constructor() {
         this.#movies = mongoConnection.getCollection(config.get("db.movies_collection"));
@@ -31,7 +31,7 @@ class MoviesService {
 
     async getMostCommented(filter) {
         const query = [
-            { $match: { } },
+            { $match: {} },
             { $sort: { num_mflix_comments: -1 } },
             { $limit: 1 },
             { $project: { _id: 1, title: 1, imdbId: "$imdb.id", comments: "$num_mflix_comments" } }
@@ -40,8 +40,23 @@ class MoviesService {
     }
 
     async addRate(rateObj) {
-        //TODO
+        let count = 0;
+        const { imdbId, rating } = rateObj;
+        const movies = await this.#movies.find({ "imdb.id": imdbId }).toArray();
+        for (let movie of movies) {
+            const newVotes = movie.imdb.votes + 1;
+            const newRating = Math.round(((movie.imdb.rating * movie.imdb.votes + rating) / newVotes) * 10) / 10;
+            const resMovie = await this.#movies.findOneAndUpdate(
+                { _id: movie._id },
+                { $set: { "imdb.votes": newVotes, "imdb.rating": newRating } }
+            );
+            if (resMovie) {
+                count++;
+            }
+        }
+        return count;
     }
+
 
     async #getFilter(query, filter) {
         this.#addFilter(query, filter);
@@ -51,7 +66,7 @@ class MoviesService {
     }
 
     #addFilter(query, filter) {
-        const {year, actor, genres, languages, amount} = filter;
+        const { year, actor, genres, languages, amount } = filter;
         if (year) {
             query[0].$match.year = year;
         }

@@ -4,9 +4,10 @@
         "stream": "console"
     },
     "accounting": {
-        "roles": ["USER", "ADMIN"],
+        "roles": ["USER", "PREMIUM_USER", "ADMIN"],
         "user_role": "USER",
         "admin_role": "ADMIN",
+        "premium_role": "PREMIUM_USER",
         "salt_rounds":  10,
         "expired_in": "1h" 
     },
@@ -15,6 +16,6 @@
         "movies_collection": "movies",
         "comments_collection": "comments",
         "favorites_collection": "favorites",
-        "users_collection": "users"
+        "accounts_collection": "users"
     }
 }
