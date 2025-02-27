@@ -32,7 +32,7 @@ const commentsPaths = {
         },
     },
     DELETE: {
-        "/delete/:id": {
+        "/:id": {
             authentication: req => "jwt",
             authorization: async req => {
                 const comment = await commentsService.getComment(req.params.id);

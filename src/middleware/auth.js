@@ -11,7 +11,7 @@ export function authenticate() {
         const authHeader = req.header("Authorization");
         if (authHeader) {
             if (authHeader.startsWith(BEARER)) {
-                jwtAuthentication(req, authHeader);
+                await jwtAuthentication(req, authHeader);
             } else if (authHeader.startsWith(BASIC)) {
                 await basicAuthentication(req, authHeader);
             }
@@ -20,10 +20,14 @@ export function authenticate() {
     };
 }
 
-function jwtAuthentication(req, authHeader) {
+async function jwtAuthentication(req, authHeader) {
     const token = authHeader.substring(BEARER.length);
     try {
         const payload = JwtUtils.verifyJwt(token);
+        const serviceAccount = await accountsService.getAccount(payload.sub);
+        if (serviceAccount.blocked) {
+            throw Error();
+        }
         req.user = payload.sub;
         req.role = payload.role;
         req.authType = "jwt";
@@ -62,7 +66,7 @@ export function checkAuthentication(paths) {
         }
         if (authentication(req)) {
             if (req.authType !== authentication(req)) {
-                throw createError(401, "no required authentication");
+                throw createError(401, "authentication error");
             }
         }
         if (!await authorization(req)) {

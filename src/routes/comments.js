@@ -22,7 +22,7 @@ commentsRouter.post("/", valitator(schemaAddComment, "body"), checkAuthenticatio
 commentsRouter.put("/", valitator(schemaUpdateComment, "body"), checkAuthentication(commentsPaths), expressAsyncHandler(async (req, res) => {
     res.send(await commentsService.updateComment(req.body.commentId, req.body.text))
 }));
-commentsRouter.delete("/delete/:id", valitator(schemaId, "params"), checkAuthentication(commentsPaths), expressAsyncHandler(async (req, res) => {
+commentsRouter.delete("/:id", valitator(schemaId, "params"), checkAuthentication(commentsPaths), expressAsyncHandler(async (req, res) => {
     res.send(await commentsService.deleteComment(req.params.id))
 }));
 
