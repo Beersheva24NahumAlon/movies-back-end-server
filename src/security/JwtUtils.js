@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import { getExpiresIn } from "../service/AccountsService.js";
+import { convertTimeStrToInt } from "../service/AccountsService.js";
+import config from "config";
 
 export default class JwtUtils {
 
@@ -7,7 +8,7 @@ export default class JwtUtils {
         return jwt.sign(
             { role: seviceAccount.role },
             process.env.JWT_SECRET,
-            { subject: seviceAccount.email, expiresIn: getExpiresIn() + "" }
+            { subject: seviceAccount.email, expiresIn: convertTimeStrToInt(config.get("accounting.expired_in")) + "" }
         );
     }
 

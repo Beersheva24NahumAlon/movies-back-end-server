@@ -18,7 +18,7 @@ moviesRouter.get("/mostcommented", valitator(schemaFilter, "body"), checkAuthent
     res.send(await moviesService.getMostCommented(req.body));
 }));
 moviesRouter.post("/rate", valitator(schemaRating, "body"), checkAuthentication(moviesPaths), expressAsyncHandler(async (req, res) => {
-    res.send({number: await moviesService.addRate(req.body)});
+    res.send({number: await moviesService.addRate({...req.body, email: req.user})});
 }));
 
 export default moviesRouter;

@@ -2,6 +2,7 @@ import { createError } from "../errors/errors.js";
 import mongoConnection from "../db/MongoConnection.js";
 import config from "config";
 import { ObjectId } from "mongodb";
+import accountsService from "./AccountsService.js";
 
 class MoviesService {
     #movies
@@ -41,8 +42,7 @@ class MoviesService {
 
     async addRate(rateObj) {
         let count = 0;
-        const { imdbId, rating } = rateObj;
-        
+        const { imdbId, rating, email } = rateObj;
         const movies = await this.#movies.find({ "imdb.id": imdbId }).toArray();
         for (let movie of movies) {
             const newVotes = movie.imdb.votes + 1;
@@ -54,6 +54,9 @@ class MoviesService {
             if (resMovie) {
                 count++;
             }
+        }
+        if (count) {
+            await accountsService.addImdbId(email, imdbId);
         }
         return count;
     }

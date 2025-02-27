@@ -1,11 +1,9 @@
 import config from "config";
 import favoritesService from "../service/FavoritesService.js";
 
-const userRole = config.get("accounting.user_role");
 const premiumRole = config.get("accounting.premium_role");
-const adminRole = config.get("accounting.admin_role");
 
-const objectPutDelete = {
+const actionJwtPremOwner = {
     authentication: req => "jwt",
     authorization: async req => {
         const favorite = await favoritesService.getFavorite(req.body.favoriteId);
@@ -26,10 +24,10 @@ const favoritesPaths = {
         }
     },
     PUT: {
-        "/": objectPutDelete
+        "/": actionJwtPremOwner
     },
     DELETE: {
-        "/": objectPutDelete
+        "/": actionJwtPremOwner
     }
 };
 export default favoritesPaths;

@@ -1,9 +1,14 @@
 import config from "config";
+import accountsService from "../service/AccountsService.js";
+
 const userRole = config.get("accounting.user_role");
 const premiumRole = config.get("accounting.premium_role");
-const adminRole = config.get("accounting.admin_role");
+const userGetLimit = config.get("limitation.user_requests_count");
 
-const allGetAuthorization = req => req.role === premiumRole //|| (req.role === userRole && getCountOfRequests(req.user));
+const allGetAuthorization = async req => {
+    const {req_count} = await accountsService.getRequestInformation(req.user);
+    return req.role === premiumRole || (req.role === userRole && req_count <= userGetLimit);
+}
 
 const moviesPaths = {
     POST: {

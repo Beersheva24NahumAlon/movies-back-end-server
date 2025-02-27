@@ -1,6 +1,10 @@
 import config from "config";
 const adminRole = config.get("accounting.admin_role");
 
+const actionJwtAdmin = {
+    authentication: req => "jwt",
+    authorization: req => req.role === adminRole
+};
 const accountsPaths = {
     POST: {
         "/admin": {
@@ -13,33 +17,24 @@ const accountsPaths = {
         }
     },
     PUT: {
-        "/role": {
-            authentication: req => req.authType,
-            authorization: req => req.user === req.body.email
-        },
+        "/role": actionJwtAdmin,
         "/password": {
-            authentication: req => req.authType,
-            authorization: req => req.user === process.env.SUPERUSER_NAME || req.user === req.body.email
+            authentication: req => "jwt",
+            authorization: req => req.role === adminRole || req.user === req.body.email
         },
-        "/block/:email": {
-            authentication: req => req.authType,
-            authorization: req => req.user === process.env.SUPERUSER_NAME
-        },
-        "/unblock/:email": {
-            authentication: req => req.authType,
-            authorization: req => req.user === process.env.SUPERUSER_NAME
-        }
+        "/block/:email": actionJwtAdmin,
+        "/unblock/:email": actionJwtAdmin
     },
     GET: {
         "/:email": {
-            authentication: req => req.authType,
-            authorization: req => req.user === process.env.SUPERUSER_NAME || req.user === req.params.email
+            authentication: req => "jwt",
+            authorization: req => req.role === adminRole || req.user === req.params.email
         }
     },
     DELETE: {
         "/:email": {
-            authentication: req => req.authType,
-            authorization: req => req.user === process.env.SUPERUSER_NAME || req.user === req.params.email
+            authentication: req => "jwt",
+            authorization: req => req.role === adminRole || req.user === req.params.email
         }
     }
 };

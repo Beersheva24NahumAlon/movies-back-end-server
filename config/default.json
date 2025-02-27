@@ -17,5 +17,14 @@
         "comments_collection": "comments",
         "favorites_collection": "favorites",
         "accounts_collection": "users"
+    },
+    "validation": {
+        "start_cinema_epoch": 1900,
+        "text_min_length": 3,
+        "max_amount": 20
+    },
+    "limitation": {
+        "user_requests_count": 10,
+        "user_requests_time": "1m" 
     }
 }

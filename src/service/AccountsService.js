@@ -2,7 +2,7 @@ import { createError } from "../errors/errors.js";
 import mongoConnection from "../db/MongoConnection.js";
 import config from "config";
 import bcrypt from "bcrypt";
-import JwtUtils from "../security/JwtUtils.js"; 
+import JwtUtils from "../security/JwtUtils.js";
 
 const userRole = config.get("accounting.user_role");
 const adminRole = config.get("accounting.admin_role");
@@ -83,7 +83,7 @@ class AccountsService {
     async #blockUnblockAccount(email, block) {
         const resAccount = await this.#accounts.findOneAndUpdate(
             { email: email },
-            { $set: { blocked: block} },
+            { $set: { blocked: block } },
             { returnDocument: "after" }
         );
         this.#throwNotFound(resAccount, email);
@@ -120,21 +120,49 @@ class AccountsService {
         }
     }
 
+    async addImdbId(email, imdbId) {
+        const serviceAccount = await this.getAccount(email);
+        if (serviceAccount.rated_movies.includes(imdbId)) {
+            throw createError(400, `user with e-mail ${email} has alredy rated movie ${imdbId}`);
+        }
+        const resAccount = this.#accounts.findOneAndUpdate(
+            { email },
+            { $push: { "rated_movies": imdbId } }
+        );
+        this.#throwNotFound(resAccount, email);
+    }
+
+    async getRequestInformation(email) {
+        let { req_start_time, req_count } = await this.getAccount(email);
+        const timeWindow = convertTimeStrToInt(config.get("limitation.user_requests_time"));
+        const now = new Date().getTime();
+        if (req_start_time + timeWindow < now || !req_start_time) {
+            req_count = 1;
+            req_start_time = now;
+        } else {
+            req_count++;
+        }
+        const resAccount = await this.#accounts.findOneAndUpdate(
+            { email },
+            { $set: { req_start_time, req_count } }
+        );
+        return { req_start_time, req_count };
+    }
+
     #toServiceAccount(account, role) {
         const hashPassword = bcrypt.hashSync(account.password, config.get("accounting.salt_rounds"));
         const expiration = getExpiration();
-        const serviceAccount = { email: account.email, name: account.name ,role, hashPassword, expiration };
+        const serviceAccount = { email: account.email, name: account.name, role, hashPassword, expiration };
         return serviceAccount;
     }
 }
 
 function getExpiration() {
-    const expiresIn = getExpiresIn();
+    const expiresIn = convertTimeStrToInt(config.get("accounting.expired_in"));
     return new Date().getTime() + expiresIn;
 }
 
-export function getExpiresIn() {
-    const expiredInStr = config.get("accounting.expired_in");
+export function convertTimeStrToInt(expiredInStr) {
     const amount = expiredInStr.split(/\D/)[0];
     const parseArray = expiredInStr.split(/\d/);
     const index = parseArray.findIndex(e => !!e.trim());
