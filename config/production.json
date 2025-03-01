@@ -1,6 +1,12 @@
 {
     "morgan" : {
         "type": "combined",
-        "stream": "logs/log.txt"
+        "stream": "all_logs.txt",
+        "stream_auth": "auth_logs.txt",
+        "rotation": {
+            "size": "10M",
+            "interval": "1d",
+            "path": "logs"
+        }
     }
 }

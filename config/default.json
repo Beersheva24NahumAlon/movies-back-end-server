@@ -1,7 +1,8 @@
 {
     "morgan": {
-        "type": "common",
-        "stream": "console"
+        "type": "dev",
+        "stream": "console",
+        "stream_auth": "console"
     },
     "accounting": {
         "roles": ["USER", "PREMIUM_USER", "ADMIN"],
