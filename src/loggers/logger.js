@@ -18,7 +18,7 @@ export const loggerAuth = morgan(morganType, {
 
 function getSteram(stream) {
     const pad = num => (num > 9 ? "" : "0") + num;
-    const generator = (time, index) => {
+    const fileNameGenerator = (time, index) => {
         let res = stream;
         if (time) {
             const month = time.getFullYear() + "" + pad(time.getMonth() + 1);
@@ -27,7 +27,7 @@ function getSteram(stream) {
         }
         return res;
     };
-    return stream == "console" ? process.stdout : createStream(generator, config.get("morgan.rotation"));
+    return stream == "console" ? process.stdout : createStream(fileNameGenerator, config.get("morgan.rotation"));
 }
 
 
